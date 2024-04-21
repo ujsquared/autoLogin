@@ -18,15 +18,14 @@ def sleep():
 def checkLogin():
     try:
         options = Options()
-        options.add_argument('headless')
+        #options.add_argument('headless')
         options.add_argument('--ignore-ssl-errors=yes')
         options.add_argument('--ignore-certificate-errors')
         driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()),options=options)
-        wait = WebDriverWait(driver, 15)
+        wait = WebDriverWait(driver, 1500)
         driver.get("https://192.168.1.250/connect/PortalMain")
         loggedInText = 'Welcome to the network.'
         loggedInElement = driver.find_element(By.XPATH, f"//*[contains(text(),'{loggedInText}')]")
-        driver.close()
         print("Logged In Already")
         isLogged = True
         return True
@@ -40,12 +39,11 @@ def checkLogin():
 def portalLogin(userid, password):
     try:
         options = Options()
-        options.add_argument('headless')
         options.add_argument('--ignore-ssl-errors=yes')
         options.add_argument('--ignore-certificate-errors')
         driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()),options=options)
         driver.get("https://192.168.1.250/connect/PortalMain")
-        loginElement = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#LoginUserPassword_auth_username.formInput')))
+        loginElement = WebDriverWait(driver, 2000).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#LoginUserPassword_auth_username.formInput')))
         loginElement = driver.find_element(By.CSS_SELECTOR,'#LoginUserPassword_auth_username.formInput')
         loginElement.send_keys(userid)
         loginElement = driver.find_element(By.ID,'LoginUserPassword_auth_password')
@@ -53,7 +51,6 @@ def portalLogin(userid, password):
         loginButton = driver.find_element(By.ID,'UserCheck_Login_Button_span')
         loginButton.click()
         isLogged = True
-        driver.close()
     except ecp:
         print('login failed! Trying again')
         failedLogin+=1
@@ -81,7 +78,7 @@ def main():
             while(failedLogin < 3):
                 portalLogin(mypass,myid)
             if checkLogin() == True:
-                sleep()
+                
                 main()
             else:
                 print("Couldn't log in,check error logs")
